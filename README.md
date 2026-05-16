@@ -1,4 +1,4 @@
-# [2023066980, Youngjin Kim] HW2 Wireless Networks
+# [2023066980, Youngjin Kim(김영진)] HW2 Wireless Networks
 
 ## Overview
 This project presents a discrete-time simulator implemented in C to analyze and compare the performance of Medium Access Control (MAC) protocols, specifically the **ALOHA** family (Pure ALOHA, Slotted ALOHA) and the **CSMA** family (Non-persistent, 1-persistent, p-persistent).
@@ -27,6 +27,7 @@ The simulation evaluates system throughput ($S$) against a wide range of offered
 │   └── protocol_throughput_plot.png <--- Final comparative throughput plot
 ├── Makefile
 ├── README.md
+├── report.pdf               <--- copy of 'README.md' (pdf format)
 └── src
     ├── channel_sim.c        <--- Main C simulator source code
     └── plot.py              <--- Python script for visualization and theoretical mapping
@@ -73,7 +74,7 @@ The primary environmental variables configured via macros and constants within `
 
 ## Protocol Operation and Algorithms
 
-### 📡 ALOHA Protocols
+###  ALOHA Protocols
 
 The ALOHA simulation varies the time granularity (`tic_per_slot`) inside `success_rate()` to mimic structural constraints.
 
@@ -85,22 +86,22 @@ The ALOHA simulation varies the time granularity (`tic_per_slot`) inside `succes
 * **channel (or tmp/ChannelState):** The instantaneous state of the channel determined by aggregating the transmission requests (`req`) from stations at each tick. It maps to `FREE` if there are no requests, `FULL` if there is exactly 1, and `FAIL` if 2 or more requests occur, representing a discrete collision.
 
 
-* **Slotted ALOHA (`tic_per_slot = 1`)**
+#### **Slotted ALOHA (`tic_per_slot = 1`)**
 * Slotted ALOHA is implemented by fixing the number of ticks per slot to 1.
 * If exactly one station transmits in a given slot, it is recorded as `FULL` (success). If two or more stations transmit, a collision (`FAIL`) occurs immediately.
 
 
-* **Pure ALOHA (`tic_per_slot = 100`)**
+#### **Pure ALOHA (`tic_per_slot = 100`)**
 * Pure ALOHA is implemented by fixing the number of ticks per slot to 100. As `tic_per_slot` increases, discrete error decreases.
 * If another transmission begins while an active transmission is in progress, all packets overlapping with the current transmission are canceled, simulating an in-transit collision.
 
 
 
-### 🔍 CSMA (Carrier Sense Multiple Access) Protocols
+###  CSMA (Carrier Sense Multiple Access) Protocols
 
 The `simulate_csma()` function simulates carrier-sensing terminals. Each tick infers whether the medium is currently busy by inspecting a historical window (`tx_starts`).
 
-* **Major Parameters**
+#### **Major Parameters**
 * **tx_starts:** An array memory space that records the number of nodes that started transmission at each tick. It serves as a history window to determine whether the channel is busy by checking if any node started transmission within the past packet transmission time (`tic_per_slot`) relative to a specific tick.
 * **deferred_queue:** The cumulative number of nodes that generated packets when the channel was busy, failing to start transmission immediately, and deferring their transmissions until the channel becomes idle. (Used in 1-Persistent and p-Persistent modes).
 * **success_count:** The total number of packets successfully transmitted without collision throughout the entire simulation period. The value increases only when exactly one node starts transmission at a specific tick (`tx_starts[i] == 1`), which is deemed a successful transmission.
@@ -109,19 +110,19 @@ The `simulate_csma()` function simulates carrier-sensing terminals. Each tick in
 * **transmitting:** The final number of nodes among the `available_nodes` that actually initiate transmission in the current tick by passing the probabilistic check based on the persistence probability (`p_persist`).
 
 
-* **Non-Persistent CSMA**
+#### **Non-Persistent CSMA**
 * When the channel is sensed as idle (`!busy`), the station transmits immediately.
 * When the channel is sensed as busy, the station immediately aborts the attempt and backs off. It is not added to a queue to transmit immediately when the channel clears.
 * A slight discrepancy from the theoretical values can be observed. This is presumed to be a discrete error due to setting `tic_per_slot=100`.
 
 
-* **1-Persistent CSMA**
+#### **1-Persistent CSMA**
 * When the channel is idle, the station transmits immediately.
 * When the channel is busy, the station continuously listens to the medium and defers traffic in the `deferred_queue`.
 * The moment the channel transitions to idle, all waiting stations attempt to transmit with a probability of 1.0. Consequently, under high load conditions, an inherently high collision spike occurs right after a busy period.
 
 
-* **p-Persistent CSMA (0.1 and 0.5)**
+#### **p-Persistent CSMA (0.1 and 0.5)**
 * When the channel is busy, stations track it and accumulate in the `deferred_queue`.
 * When the channel becomes idle, the accumulated and new arrivals attempt to transmit with the configured fractional probability $p_{\text{persist}}$ (e.g., 0.1 or 0.5).
 * Nodes that fail the probabilistic check defer their attempts to the next tick, mitigating the collision spike following a busy state.
