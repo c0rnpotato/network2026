@@ -87,6 +87,14 @@ ALOHA 시뮬레이션은 구조적 제약을 모방하기 위해 `success_rate()
 
 `simulate_csma()` 함수는 반송파 감지 단말을 시뮬레이션합니다. 각 틱은 과거 이력 윈도우(`tx_starts`)를 확인하여 매체가 현재 사용 중(busy)인지 추론합니다.
 
+* **Major-parameter**
+* **tx_starts**: 각 틱(tic) 단위로 전송을 시작한 노드의 개수를 기록하는 배열 메모리 공간입니다. 특정 틱을 기준으로 과거 패킷 전송 시간(`tic_per_slot`) 범위 내에 전송을 시작한 노드가 있는지 확인하여 채널의 사용 중(busy) 여부를 판별하는 이력 윈도우 역할을 합니다.
+* **deferred_queue**: 채널이 사용 중(busy)일 때 패킷이 발생하여 전송을 즉시 시작하지 못하고, 채널이 유휴 상태가 될 때까지 전송을 미루며 대기하는 노드들의 누적 개수입니다. (1-Persistent 및 p-Persistent에서 사용)
+* **success_count**: 시뮬레이션 전체 기간 동안 충돌 없이 전송에 성공한 패킷의 총 개수입니다. 특정 틱에 전송을 시작한 노드가 오직 하나인 경우(`tx_starts[i] == 1`)에만 전송 성공으로 판정하여 값이 증가합니다.
+* **p_persist**: p-Persistent CSMA에서 채널이 유휴(idle) 상태일 때 노드가 패킷을 전송할 확률입니다. 코드에서는 프로토콜 타입에 따라 0.1, 0.5, 혹은 1.0(1-Persistent)으로 설정됩니다.
+* **available_nodes**: 채널이 사용 중 상태에서 유휴 상태로 전환될 때, 현재 틱에서 전송 경쟁에 참여할 수 있는 전체 노드의 수입니다. 새로 발생한 트래픽(`new_arrivals`)과 기존에 전송을 미루고 대기하던 트래픽(`deferred_queue`)의 합으로 계산됩니다.
+* **transmitting**: 전송 자격을 갖춘 `available_nodes` 중, 지속 확률(`p_persist`)에 따른 확률적 체크를 통과하여 실제로 현재 틱에 전송을 개시하는 노드의 최종 개수입니다.
+
 * **Non-Persistent CSMA**
 * 채널이 유휴 상태(`!busy`)로 감지되면 스테이션은 즉시 전송합니다.
 * 채널이 사용 중으로 감지되면 스테이션은 즉시 시도를 포기하고 백오프(back off)합니다. 채널이 해제될 때 즉시 전송하기 위해 대기열에 추가되지 않습니다.
@@ -121,6 +129,6 @@ gcc src/channel_sim.c -o cashe/channel_sim.exe -lm -DNUM_STATIONS=300 -DSLOT_SIZ
 .\cashe\channel_sim.exe
 python src/plot.py
 move channel_sim_results.dat results/
-  move protocol_throughput_plot.png results/
+move protocol_throughput_plot.png results/
 ```
 
