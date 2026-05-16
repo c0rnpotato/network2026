@@ -6,6 +6,8 @@
 
 시뮬레이션은 광범위하게 제공되는 트래픽 부하($G$)에 대한 시스템 처리량($S$)을 평가합니다. 시뮬레이션 결과는 데이터 파일로 내보내지며, 이후 Python 스크립트를 통해 실험 데이터와 이론적 성능 곡선을 함께 그래프로 시각화하여 비교 분석합니다.
 
+![result](./results/protocol_throughput_plot.png)
+
 ---
 
 ## 주요 특징
@@ -109,7 +111,10 @@ ALOHA 시뮬레이션은 구조적 제약을 모방하기 위해 `success_rate()
 프로젝트 컴파일 및 수명 주기는 `Makefile`을 통해 관리됩니다.
 
 Linux: make
+  이 명령은 C 소스 코드를 `cashe/channel_sim`으로 컴파일하고, 바이너리를 실행하여 원시 데이터를 출력하고, `plot.py`를 실행하여 결과를 처리한 다음, 모든 것을 `results/` 폴더에 정리합니다.
+
 Windows
+
 ```text
 mkdir cashe, results
 gcc src/channel_sim.c -o cashe/channel_sim.exe -lm -DNUM_STATIONS=300 -DSLOT_SIZE_MS=10 -DSIMULATION_SLOTS=10000 -DNUM_G_VALUES=17
@@ -118,26 +123,4 @@ python src/plot.py
 move channel_sim_results.dat results/
   move protocol_throughput_plot.png results/
 ```
-
-```
-
-
-
-```
-  이 명령은 C 소스 코드를 `cashe/channel_sim`으로 컴파일하고, 바이너리를 실행하여 원시 데이터를 출력하고, `plot.py`를 실행하여 결과를 처리한 다음, 모든 것을 `results/` 폴더에 정리합니다.
-
-* **빌드 환경 정리:**
-  ```bash
-  make clean
-  
-
-```
-
-컴파일된 바이너리 아티팩트, 임시 데이터 로그 및 생성된 그림을 제거합니다.
-
-## 결과 및 분석
-
-### 처리량 비교 그래프
-
-시뮬레이션 데이터에서 생성된 그래프는 구현된 프로토콜의 성능을 이론적 한계와 비교합니다.
 
