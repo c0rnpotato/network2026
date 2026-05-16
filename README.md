@@ -1,4 +1,3 @@
-```markdown
 # [2023066980, Youngjin Kim] HW2 Wireless Networks
 
 ## Overview
