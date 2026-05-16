@@ -1,5 +1,5 @@
 ```markdown
-# [2023066980, Youngjin Kim] HW4 - Wireless Networks
+# [2023066980, Youngjin Kim] HW2 Wireless Networks
 
 ## Overview
 This project presents a discrete-time simulator implemented in C to analyze and compare the performance of Medium Access Control (MAC) protocols, specifically the **ALOHA** family (Pure ALOHA, Slotted ALOHA) and the **CSMA** family (Non-persistent, 1-persistent, p-persistent).
